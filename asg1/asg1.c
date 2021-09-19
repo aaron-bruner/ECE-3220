@@ -1,3 +1,8 @@
+// Aaron Bruner
+// C16480080
+// ECE-3320 - Intro to OS
+// asg1.c
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
@@ -7,22 +12,7 @@
 
 #define NUM_THREADS 3
 
-
-/*  Parent Process:
- *      Create three threads:
- *          threads will be based on the function thread_func
- *              thread_func will take one integer value
- *              will take the integer and multiply it by 5
- *              return the product to parent using thread_exit
- *          thread_join in the parent
- *      Print:
- *          PID
- *          PPID
- *          Each Thread's PID
- *          Each thread's original and resulting values from the thrad
- *
- */
-
+// This takes in a pointer to an integer, dereferences it, multiplies it by 5 then exits.
 void * thread_func (void * i) {
     int *return_value = (int *) i;
     *(return_value) *= 5;
@@ -31,50 +21,43 @@ void * thread_func (void * i) {
 
 int main (int argc, char **argv) {
 
-    pthread_t thread_one_pid, thread_two_pid, thread_three_pid;
-    int thread_one_return = atoi(argv[3]), thread_two_return = atoi(argv[4]), thread_three_return = atoi(argv[5]);
-
-    if (argc != 6) {
+    if (argc != 6) { // Ensure we got the correct number of CLA
         printf("Incorrect number of command line arguments...\n\nExample: ./asg1 17 18 11 22 33\n");
         exit(1);
     }
 
-    int forkpid = fork();
-
-    if (forkpid == -1) { // Error in fork call
-        printf("Error: Unable to fork...\n\n");
-        exit(1);
+    pthread_t tpid[NUM_THREADS];
+    int tReturn[NUM_THREADS];
+    for (int j = 0; j < NUM_THREADS; j++) {
+        tReturn[j] = atoi(argv[j+NUM_THREADS]);
     }
-    if (forkpid == 0) { // Child
-        execl("./child_function", "child_function", argv[1], argv[2], NULL);
-    }
-    if (forkpid != 0 && forkpid != -1) { // Parent Function
-        wait(NULL);
 
-        printf("Parent process: PID %d and PPID %d\n", getpid(), getppid());
+    int fpid = fork();
 
-        if(pthread_create(&thread_one_pid, NULL, thread_func, (void *)&thread_one_return)) {
-            printf("Error: Unable to create thread one...\n");
-            exit(1); }
-        if(pthread_create(&thread_two_pid, NULL, thread_func, (void *)&thread_two_return)) {
-            printf("Error: Unable to create thread two...\n");
-            exit(1); }
-        if(pthread_create(&thread_three_pid, NULL, thread_func, (void *)&thread_three_return)) {
-            printf("Error: Unable to create thread three...\n");
-            exit(1); }
+    switch (fpid) {
+        case -1: // Unable to fork
+            printf("Error: Unable to fork...\n\n");
+            exit(1);
+        case 0: // Currently in the child function. Run the child_function.c program with arg one and two from CLA.
+            execl("./child_function", "child_function", argv[1], argv[2], NULL);
+        default: // Parent
+            wait(NULL);
 
-        if(pthread_join(thread_one_pid, NULL)) {
-            printf("Error: Unable to join thread one...\n");
-            exit(1);
-        } else printf("   Thread %ld, Initial value: %d, Result is: %d\n", thread_one_pid, atoi(argv[3]), thread_one_return);
-        if(pthread_join(thread_two_pid, NULL)) {
-            printf("Error: Unable to join thread two...\n");
-            exit(1);
-        } else printf("   Thread %ld, Initial value: %d, Result is: %d\n", thread_two_pid, atoi(argv[4]), thread_two_return);
-        if(pthread_join(thread_three_pid, NULL)) {
-            printf("Error: Unable to join thread three...\n");
-            exit(1);
-        } else printf("   Thread %ld, Initial value: %d, Result is: %d\n", thread_three_pid, atoi(argv[5]), thread_three_return);
+            printf("Parent process: PID %d and PPID %d\n", getpid(), getppid());
+
+            for (int i = 0; i < NUM_THREADS; i++) { // Create 3 threads
+                if(pthread_create(&tpid[i], NULL, thread_func, (void *)&tReturn[i])) {
+                    printf("Error: Unable to create thread %d...\n", i++);
+                    exit(1);
+                }
+            }
+            for (int k = 0; k < NUM_THREADS; k++) { // Join 3 threads and print
+                if(pthread_join(tpid[k], NULL)) {
+                    printf("Error: Unable to join thread %d", k++);
+                    exit(1);
+                } else printf("   Thread %ld, Initial value: %d, Result is: %d\n",
+                              tpid[k], atoi(argv[k+NUM_THREADS]), tReturn[k]);
+            }
     }
 
     return 0;
