@@ -205,6 +205,7 @@ void SJF (){
         myVector1.emplace_back(temp);
     }
     availble_time = myVector1[myVector1.size() -1].final_time+1;
+
     //printing first table
     cout << "SJF(preemptive) scheduling results\n\n";
     cout << "time\tcpu\tready\tqueue (taskID/rst)\n";
