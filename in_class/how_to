@@ -1,0 +1,12 @@
+HOW TO CREATE A SOFT LINK:
+* touch file1.txt                  VV
+* touch file2.txt               create two files
+* ls -il                        this is how you view the files with their inodes
+* ln -s file1.txt my_softlink   this will create a soft link named my_softlink
+* rm file1.txt                  remove file that the soft link points to
+* ls -il                        observe that the file now has a dead link
+HOW TO CREATE A HARD LINK:
+* ln file2.txt my_hardlink      creates a hard link to the file (A DUPLICATE)
+* ls -il                        view the new hard link. The two files are one in the same. modify one and it modifies the other.
+* rm file2.txt                  remove original file
+* ls -il                        notice that the link still works
