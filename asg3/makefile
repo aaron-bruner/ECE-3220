@@ -1,20 +1,13 @@
-bin: tfs_1.c tfs_2.c tfs_driver1.c
-	gcc -o tfs.out tfs_1.c tfs_2.c tfs_driver1.c
+all: make
 
-run:
-	./a.out > out.txt
-
-run2: tfs_1.c tfs_2.c tfs_driver2.c
-	gcc tfs_1.c tfs_2.c tfs_driver2.c
-	./a.out
-
-debug: tfs_1.c tfs_2.c tfs_driver1.c
-	gcc -g tfs_1.c tfs_2.c tfs_driver1.c
-	gdb ./a.out
-
-debug2: tfs_1.c tfs_2.c tfs_driver2.c
-	gcc -g tfs_1.c tfs_2.c tfs_driver2.c
-	gdb ./a.out
-
+driver1: tfs_1.o tfs_2.o tfs.h tfs_driver1.o 
+	gcc tfs_driver1.c tfs_1.c tfs_2.c -o driver1
+	
+driver2: tfs_1.o tfs_2.o tfs.h tfs_driver2.o 
+	gcc tfs_driver2.c tfs_1.c tfs_2.c -o driver2
+	
 clean:
-	rm *.out
+	rm driver1 driver2 *.o
+	
+tar:
+	tar -czvf Homework3.tar.gz *

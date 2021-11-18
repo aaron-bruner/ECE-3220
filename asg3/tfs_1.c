@@ -1,3 +1,8 @@
+// Aaron Bruner & David Brown
+// C16480080 & C32056809
+// ECE-3320 - Intro to OS
+// asg3.c
+
 #include "tfs.h"
 
 
@@ -72,6 +77,17 @@ unsigned int tfs_new_block(){
   return( 0 );
 }
 
+void printPerms(unsigned int fd){
+    printf("           Read/Write/Delete: ");
+    char read = '-';
+    char write = '-';
+    char delete = '-';
+    
+    if(file_is_readable(fd)){read = 'R';}
+    if(file_is_writable(fd)){write = 'W';}
+    if(file_is_deletable(fd)){delete = 'D';}
+    printf("%c%c%c\n",read,write,delete);
+}
 
 /* implementation of public functions */
 
@@ -117,6 +133,7 @@ void tfs_list_blocks(){
   printf( "-- end --\n" );
 }
 
+
 /* tfs_list_directory()
  *
  * list all directory entries
@@ -136,10 +153,12 @@ void tfs_list_directory(){
       printf( "unused\n" );
     }else if( directory[fd].status == CLOSED ){
       printf( "%s, currently closed, %d bytes in size\n",
-        directory[fd].name, directory[fd].size );
+        directory[fd].name, directory[fd].size);
+        printPerms(fd);
     }else if( directory[fd].status == OPEN ){
       printf( "%s, currently open, %d bytes in size\n",
-        directory[fd].name, directory[fd].size );
+        directory[fd].name, directory[fd].size);
+        printPerms(fd);
     }else{
       printf( "*** status error\n" );
     }
@@ -213,6 +232,12 @@ unsigned int tfs_create( char *name ){
   file_descriptor = tfs_new_directory_entry();
   if( file_descriptor == 0 ) return( 0 );
   directory[file_descriptor].status = OPEN;
+  
+  //Initialize permissions to false, per assignment parameters
+  //Visualization: 0000 1001
+  //                     RWD
+  directory[file_descriptor].rwd = 9;
+  
   directory[file_descriptor].first_block = 0;
   directory[file_descriptor].size = 0;
   directory[file_descriptor].byte_offset = 0;
@@ -248,6 +273,11 @@ unsigned int tfs_open( char *name ){
   if( tfs_check_file_is_open( file_descriptor ) ) return( 0 );
   directory[file_descriptor].status = OPEN;
   directory[file_descriptor].byte_offset = 0;
+  
+  //Add read and write permissions to an open file.
+  file_make_readable(file_descriptor);
+  file_make_writable(file_descriptor);
+  
   return( file_descriptor );
 }
 

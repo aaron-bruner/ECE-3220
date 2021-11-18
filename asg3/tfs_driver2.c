@@ -1,3 +1,8 @@
+// Aaron Bruner & David Brown
+// C16480080 & C32056809
+// ECE-3320 - Intro to OS
+// asg3.c
+
 /* test driver */
 
 #include "tfs.h"
@@ -30,7 +35,7 @@ int main(){
 
   tfs_list_directory();
 
-  fd[0] = tfs_create( "file.txt" );
+  fd[0] = tfs_create( "file" );
   if( fd[0] == 0 ) printf( "first create failed\n" );
 
   fd[1] = tfs_create( "my_file" );

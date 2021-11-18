@@ -1,3 +1,8 @@
+// Aaron Bruner & David Brown
+// C16480080 & C32056809
+// ECE-3320 - Intro to OS
+// asg3.c
+
 /* CPSC/ECE 3220 Fall 2019
  *
  * trivial file system
@@ -57,7 +62,7 @@
 #define BLOCK_SIZE_AS_POWER_OF_2 7
 #define N_BYTES (256*128)
 #define MAX_FILE_SIZE (252*128)
-#define FILENAME_LENGTH 9
+#define FILENAME_LENGTH 8
 #define FIRST_VALID_FD 1
 #define FIRST_VALID_BLOCK 4
 
@@ -97,6 +102,8 @@ struct directory_entry{
   unsigned char first_block;
   unsigned short size;
   unsigned short byte_offset;
+  //Read, write, and delete permissions.
+  unsigned char rwd;
   char name[FILENAME_LENGTH + 1];
 };
 
@@ -136,6 +143,25 @@ unsigned int tfs_close(  unsigned int file_descriptor );
 
 unsigned int tfs_delete( unsigned int file_descriptor );
 
+//New functions to handle permissions
+unsigned int file_is_readable( unsigned int file_descriptor );
+
+unsigned int file_is_writable( unsigned int file_descriptor );
+
+void file_make_readable( unsigned int file_descriptor );
+
+void file_make_writable( unsigned int file_descriptor );
+
+unsigned int file_is_deletable( unsigned int file_descriptor );
+
+void file_make_deleteable( unsigned int file_descriptor );
+
+void file_revoke_read(unsigned int file_descriptor);
+
+void file_revoke_write(unsigned int file_descriptor);
+
+void file_revoke_delete(unsigned int file_descriptor);
+
 
 /* helper functions */
 
@@ -147,3 +173,4 @@ unsigned int tfs_size( unsigned int file_descriptor );
 unsigned int tfs_new_directory_entry();
 unsigned int tfs_map_name_to_fd( char *name );
 unsigned int tfs_new_block();
+void printPerms(unsigned int fd);

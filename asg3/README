@@ -1,0 +1,17 @@
+Some permission rules:
+All files start with no read permission, no write permission, and delete permissions.
+Files are granted rights in the driver.
+Files that have been written to lose delete and write permissions, but gain read permissions.
+
+Permissions work as follow:
+Read, write, and delete are all one character. The three least significant bits, in order of left to right, represent read, write, and delete. This saves as many resources as possible for the name.
+
+Changes to drivers:
+driver1 has been updated so that it shows every permission update (giving read, write, and delete). It also tests each function with both permissions to show it only works given permission.
+driver2 has been left the same. It shows how no permission changes differs from expected output.
+
+Makefile:
+make driver1: compile driver1. Run with ./driver1
+make driver2: compiles driver2. Run with ./driver2
+make clean: removes all .o files and driver1 and driver2.
+make tar: compress all the files in current working directory into Homework3.tar.gz

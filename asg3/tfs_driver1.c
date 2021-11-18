@@ -1,3 +1,8 @@
+// Aaron Bruner & David Brown
+// C16480080 & C32056809
+// ECE-3320 - Intro to OS
+// asg3.c
+
 /* test driver */
 
 #include "tfs.h"
@@ -44,6 +49,21 @@ int main(){
   count2 = tfs_write( fd[1], buffer2, length2 );
   printf( "%d bytes written to second file\n", count2 );
 
+
+  tfs_list_directory();
+  tfs_list_blocks();
+
+  printf("Giving first file write permissions\n");
+  file_make_writable(fd[0]);
+  
+  tfs_list_directory();
+  tfs_list_blocks();
+
+  count1 = tfs_write( fd[0], buffer1, length1 );
+  printf( "%d bytes written to first file\n", count1 );
+
+  printf("Giving first file write permissions\n");
+  file_make_writable(fd[0]);
   count1 = tfs_write( fd[0], buffer1, length1 );
   printf( "%d bytes written to first file\n", count1 );
 
@@ -52,11 +72,25 @@ int main(){
   tfs_list_directory();
   tfs_list_blocks();
 
+  printf("Revoking read permissions from first file\n");
+  file_revoke_read(fd[0]);
+
   tfs_seek( fd[0], 600 );
   count3 = tfs_read( fd[0], buffer3, 640 );
   printf( "%d bytes read from first file\n", count3 );
   buffer3[count3] = '\0';
   printf( "[%s]\n", buffer3 );
+  
+  printf("Giving first file read permissions\n");
+  file_make_readable(fd[0]);
+
+  tfs_seek( fd[0], 600 );
+  count3 = tfs_read( fd[0], buffer3, 640 );
+  printf( "%d bytes read from first file\n", count3 );
+  buffer3[count3] = '\0';
+  printf( "[%s]\n", buffer3 );
+  
+  
 
   tfs_seek( fd[0], 250 );
   count3 = tfs_read( fd[0], buffer3, 20 );
@@ -89,6 +123,12 @@ int main(){
   tfs_delete( fd[0] );
 
   tfs_list_directory();
+  
+  //Give file delete permissions
+  printf("Giving first file delete permissions\n");
+  file_make_deleteable(fd[0]);
+  tfs_close( fd[0] );
+  tfs_delete( fd[0] );
 
   tfs_close( fd[3] );
   tfs_close( fd[4] );
